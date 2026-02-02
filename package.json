@@ -1,0 +1,12 @@
+{
+  "name": "ejerciciosjavascriptpartedos",
+  "version": "1.0.0",
+  "description": "Este repositorio contiene una serie de algoritmos o ejercicios de Programación en Javascript, enfocados en métodos y estructuras de datos, así como la práctica de conceptos fundamentales abordados en el día a día del desarrollador.",
+  "main": "ejercicios.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
