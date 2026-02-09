@@ -998,3 +998,73 @@
 // }
 // const print = findSubconjuntos(values);
 // console.log(print);
+
+// Diseñar e implementar un gestor de descargas que simule la descarga concurrente de múltiples archivos, permitiendo registrar tareas asíncronas, ejecutar las descargas en bloque y gestionar el estado individual de cada archivo. La solución debe manejar correctamente escenarios de éxito y fallo sin interrumpir la ejecución global, garantizando encapsulación del estado, control del ciclo de vida de las tareas y una ejecución segura mediante promesas.
+
+function createFileDownload() {
+  let downloads = [];
+
+  class FileDownload {
+    constructor() {
+      this.statusMap = Object.create(null);
+    }
+
+    simulatedFileDownload(fileName) {
+      this.statusMap[fileName] = "File-In-Progress";
+      return new Promise((resolve, reject) => {
+        const time = Math.floor(Math.random() * 3000) + 1000;
+        setTimeout(() => {
+          const success = Math.random() > 0.2;
+          if (success) {
+            this.statusMap[fileName] = "File-Downloaded-Successfully";
+            resolve(`Archivo: ${fileName} descargado exitosamente`);
+          } else {
+            this.statusMap[fileName] = "File-Failed-Download";
+            reject(`Archivo: ${fileName} falló la descarga`);
+          }
+        }, time);
+      });
+    }
+
+    addFileDownload(fileName) {
+      const task = this.simulatedFileDownload(fileName);
+      downloads.push(task);
+    }
+
+    async executedFileDownload() {
+      try {
+        const tasks = [...downloads];
+        downloads = [];
+        let task = await Promise.allSettled(tasks);
+        console.table(this.statusMap);
+        task.forEach((tarea) => {
+          if (tarea.status === "fulfilled") {
+            console.log("✔ ", tarea.value);
+          } else {
+            console.log("✖ ", tarea.reason);
+          }
+        });
+      } catch (err) {
+        console.error(err.message);
+      }
+    }
+  }
+
+  return new FileDownload();
+}
+
+const manager = createFileDownload();
+
+// Archivos simulados
+[
+  "file1.zip",
+  "file2.zip",
+  "file3.pdf",
+  "video1.mp4",
+  "video2.mp4",
+  "video3.mp4",
+  "photo.png",
+  "update.pkg",
+].forEach((file) => manager.addFileDownload(file));
+
+manager.executedFileDownload();
