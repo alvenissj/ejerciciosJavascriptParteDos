@@ -199,8 +199,9 @@
 // function findNumbersPrime(n) {
 //   if (n <= 1) return false;
 //   if (n === 2) return true;
+//   if (n % 2 === 0) return false;
 
-//   for (let i = 2; i <= Math.sqrt(n); i++) {
+//   for (let i = 3; i <= Math.sqrt(n); i++) {
 //     if (n % i === 0) return false;
 //   }
 //   return true;
@@ -219,45 +220,6 @@
 //       print.forEach((value) => console.log(value))
 
 // **********************************************
-// mplementar en JavaScript una solución que, dado un número entero positivo target, evalúe todos los números comprendidos entre 2 y target para determinar si son números primos. La solución debe realizarse en una sola función.
-
-// function showPrimeNumber(limit) {
-//   if (!Number.isInteger(limit) || limit <= 0) {
-//     throw new TypeError(
-//       "El parámetro de la función DEBE ser un entero positivo mayor a cero...",
-//     );
-//   }
-//   const results = [];
-
-//   for (let n = 1; n <= limit; n++) {
-//     let isPrime = true;
-
-//     if (n <= 1) {
-//       isPrime = false;
-//     } else {
-//       for (let i = 2; i <= Math.sqrt(n); i++) {
-//         if (n % i === 0) {
-//           isPrime = false;
-//           break;
-//         }
-//       }
-//     }
-
-//     results.push(
-//       isPrime ? `El número "${n}" es primo` : `El número "${n}" no es primo`,
-//     );
-//   }
-//   return results;
-// }
-
-// try {
-//   const print = showPrimeNumber(4);
-//   console.log(print);
-// } catch (err) {
-//   console.error(err.message);
-// }
-
-// **********************************************
 
 // Suma de dos números: Dado un arreglo de números enteros, se debe retornar los indices de los dos números de los cuales al sumarlos nos de como resultado el número buscado "target". (SOLUCIÓN COMPLEJA)
 // ejemplo: Input: nums = [3,2,4,3]  |  target= 6
@@ -270,10 +232,10 @@
 //   let results = [];
 
 //   for (let i = 0; i < n; i++) {
-//     let currentValue = arrValues[i]; // 18
-//     let diffValues = target - currentValue; // 15
+//     let currentValue = arrValues[i]; 
+//     let diffValues = target - currentValue; 
 //     if (indiceValue.has(diffValues)) {
-//       let indicePrevios = indiceValue.get(diffValues); // [3]
+//       let indicePrevios = indiceValue.get(diffValues); 
 //       for (let j of indicePrevios) {
 //         results.push([j, i]); //[ [0, 1],  [1, 5], [3, 6] ]
 //       }
@@ -321,67 +283,32 @@
 
 // Dada una palabra, buscarla en una frase y devolver cuántas veces aparece. La frase y la palabra DEBEN ser parametros de una función. (SOLUCIÓN SIMPLE Y LARGA)
 
-// function searchWord(frase, palabra) {
-//   const loweredFrase = frase.toLowerCase();
-//   const cleanLoweredFrase = loweredFrase.replace(/[-.!¡]/gi, "");
-//   const loweredPalabra = palabra.toLowerCase();
-//   const cleanLoweredPalabra = loweredPalabra.replace(/[-.!¡]/gi, "");
-//   const splittCleanLoweredFrase = cleanLoweredFrase.split(" ");
-//   let result = "";
+// const PUNCTUATION_REGEX = /[^\w\s]/g;
 
-//   if (splittCleanLoweredFrase.includes(cleanLoweredPalabra)) {
-//     const reduced = splittCleanLoweredFrase.reduce((acc, ele) => {
-//       acc[ele] ??= 0;
-//       acc[ele]++;
-//       return acc;
-//     }, {});
-//     result = `La palabra: "${cleanLoweredPalabra}" se encuentra ${reduced[cleanLoweredPalabra]} veces en la frase`;
-//   } else {
-//     result = `La palabra: "${cleanLoweredPalabra}" no se encuentra en la frase`;
-//   }
+// const normalize = (str) => str.toLowerCase().replace(PUNCTUATION_REGEX, "");
 
-//   return result;
+// function searchWord(phrase, word) {
+//   const cleanWord = normalize(word);
+//   const tokens = normalize(phrase).split(/\s+/);
+//   const count = tokens.filter((token) => token === cleanWord).length;
+
+//   return { word: cleanWord, found: count > 0, count: count };
 // }
 
-// const print = searchWord(
-//   "hola- hola! HoLa. HOLa hoLA tal HOLA como estas jajaja que tal tal",
-//   "tal!",
-// );
-// console.log(print);
-
-// *******************************************
-
-// Dada una palabra, buscarla en una frase y devolver cuántas veces aparece. La frase y la palabra DEBEN ser parametros de una función. (SOLUCIÓN OPTIMIZADA Y PROFESIONAL)
-
-// function searchWord(sentence, word) {
-//   const normalize = (text) =>
-//     text
-//       .toLowerCase()
-//       .replace(/[-.!¡]/gi, "")
-//       .split(" ");
-
-//   const phrase = normalize(sentence);
-//   const target = normalize(word)[0];
-
-//   const frecuency = phrase.reduce((acc, palabra) => {
-//     acc[palabra] ??= 0;
-//     acc[palabra]++;
-//     return acc;
-//   }, {});
-
-//   const count = frecuency[target] || 0;
-
-//   return count > 0
-//     ? `La palabra "${target}" se encuentra ${count} veces en la frase.`
-//     : `La palabra "${target}" no se encuentra en la frase.`;
+// function formatResults({ word, found, count }) {
+//   return found
+//     ? `La palabra: "${word}" se encuentra: ${count} ve${count !== 1 ? "ces" : "z"}`
+//     : `La palabra: "${word}" no se encuentra en la frase`;
 // }
 
-// const print = searchWord(
-//   "hola- hola! HoLa. HOLa hoLA tal HOLA HOLA como estas jajaja que tal tal",
-//   "hola!",
+// const results = searchWord(
+//   "hola- hola! HoLa. HOLa hoLA tal HOLA- como estas jajaja que tal tal",
+//   "asdfrdsf!-",
 // );
 
-// console.log(print);
+// console.log(results);
+// console.log(formatResults(results))
+
 
 // *******************************************
 
