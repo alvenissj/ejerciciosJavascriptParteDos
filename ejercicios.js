@@ -1,3 +1,170 @@
+// Implementa un sistema de gestión de descargas concurrentes en JavaScript que limite el número de tareas ejecutándose simultáneamente mediante un Semaphore.
+
+// El sistema debe:
+
+// 1. Procesar una lista de archivos simulando descargas asíncronas.
+// 2. Respetar un límite máximo de concurrencia configurable.
+// 3. Reintentar automáticamente las descargas fallidas usando backoff exponencial.
+// 4. Mantener el estado de cada descarga (en progreso, reintento, éxito o fallo).
+// 5. Generar un reporte final con los resultados de todas las operaciones.
+
+// class Semaphore {
+//   #slots;
+//   #queue = [];
+
+//   constructor(concurrency) {
+//     if (!Number.isInteger(concurrency) || concurrency < 1) {
+//       throw new RangeError(
+//         `Concurrency debe ser un entero positivo mayor a cero`,
+//       );
+//     }
+//     this.#slots = concurrency;
+//   }
+
+//   acquire() {
+//     return new Promise((resolve) => {
+//       if (this.#slots > 0) {
+//         this.#slots--;
+//         resolve(this.#release.bind(this));
+//       } else {
+//         this.#queue.push(resolve);
+//       }
+//     });
+//   }
+
+//   #release() {
+//     if (this.#queue.length > 0) {
+//       const next = this.#queue.shift();
+//       next(this.#release.bind(this));
+//     } else {
+//       this.#slots++;
+//     }
+//   }
+
+//   get pending() {
+//     return this.#queue.length;
+//   }
+// }
+
+// function createDownloadManager({ concurrency = 5, retries = 2 } = {}) {
+//   class DownloadManager {
+//     #statusMap = Object.create(null);
+//     #results = [];
+//     #retries = retries;
+//     #semaphore = new Semaphore(concurrency);
+
+//     static STATUS = Object.freeze({
+//       IN_PROGRESS: "IN-PROGRESS",
+//       RETRY: (n) => `retry-${n}`,
+//       SUCCESS: "fulfilled",
+//       FAILED: "rejected",
+//     });
+
+//     async #enqueue(fileName) {
+//       const id = crypto.randomUUID();
+//       const release = await this.#semaphore.acquire();
+//       this.#statusMap[id] = { status: DownloadManager.STATUS.IN_PROGRESS };
+//       try {
+//         const value = await this.#downloadWithRetry(id, fileName);
+//         this.#results.push({
+//           id,
+//           value,
+//           status: DownloadManager.STATUS.SUCCESS,
+//         });
+//       } catch (reason) {
+//         this.#results.push({
+//           id,
+//           reason,
+//           status: DownloadManager.STATUS.FAILED,
+//         });
+//       } finally {
+//         release();
+//       }
+//     }
+
+//     async #downloadWithRetry(id, fileName, attempt = 0) {
+//       try {
+//         return await this.#simulateDownloadManager(id, fileName);
+//       } catch (err) {
+//         if (attempt >= this.#retries) throw err;
+//         const delay = 100 * 2 ** attempt;
+//         await new Promise((r) => setTimeout(r, delay));
+
+//         this.#statusMap[id] = {
+//           status: DownloadManager.STATUS.RETRY(attempt + 1),
+//         };
+//         return this.#downloadWithRetry(id, fileName, attempt + 1);
+//       }
+//     }
+
+//     #simulateDownloadManager(id, fileName) {
+//       return new Promise((resolve, reject) => {
+//         const delay = Math.floor(Math.random() * 3000) + 500;
+//         const success = Math.random() > 0.7;
+
+//         setTimeout(() => {
+//           const S = DownloadManager.STATUS;
+//           const status = success ? S.SUCCESS : S.FAILED;
+//           this.#statusMap[id] = { fileName, status };
+
+//           if (!success) {
+//             return reject(`${fileName} - Descarga Fallida`);
+//           }
+
+//           resolve(`${fileName} - Descarga exitosa`);
+//         }, delay);
+//       });
+//     }
+
+//     async runFile(arrFiles) {
+//       const tasks = [];
+//       for (const file of arrFiles) {
+//         tasks.push(this.#enqueue(file));
+//       }
+//       await Promise.allSettled(tasks);
+//       return this.#buildReport();
+//     }
+
+//     #buildReport() {
+//       const succeeded = this.#results.filter((f) => f.status === "fulfilled");
+//       const failed = this.#results.filter((f) => f.status === "rejected");
+//       console.table(this.#statusMap);
+//       console.log(
+//         `\n   ${succeeded.length} Descargas OK | ${failed.length} Descargas Fallidas`,
+//       );
+
+//       for (const f of this.#results) {
+//         if (f.status === "fulfilled") {
+//           console.log(`   ${f.value}`);
+//         } else {
+//           console.log(`   ${f.reason}`);
+//         }
+//       }
+
+//       return { succeeded, failed, status: { ...this.#statusMap } };
+//     }
+//   }
+//   return new DownloadManager();
+// }
+
+// const manager = createDownloadManager({ concurrency: 3, retries: 2 });
+
+// const files = [
+//   "file1.zip",
+//   "file2.zip",
+//   "file3.pdf",
+//   "video1.mp4",
+//   "video2.mp4",
+//   "video3.mp4",
+//   "photo.png",
+//   "update.pkg",
+//   "photo.png",
+//   "update.pkg",
+//   "update.pkg",
+// ];
+
+// manager.runFile(files);
+
 // Dado un entero positivo n (1 ≤ n ≤ 3999), implemente una función que convierta el número a su representación equivalente en números romanos.
 // La solución debe cumplir los siguientes requisitos:
 
@@ -745,90 +912,93 @@
 // const strg = 'Hola soy Alvenis José' --> sin espacios...
 // array = [ 'Hola', 'soy', 'Alvenis', 'José' ] --> convertido en array
 
-// Primera forma usando métodos conocidos
-
-// const caracteres = "Hola    soy  Alvenis José";
-
-// function cleanSpaces(frase) {
-//   const cleanFrase = frase.replace(/\s+/gi, " ").split(" ");
-
-//   return cleanFrase;
+// function cleanSpaces(caracteres) {
+//   const cleanCaracteres = caracteres.replace(/\s+/g, " ");
+//   const splitted = cleanCaracteres.split(" ");
+//   return splitted;
 // }
 
-// const print = cleanSpaces(caracteres);
+// const print = cleanSpaces("Hola    soy  Alvenis José");
 // console.log(print);
 
-// Segunda forma a Pie con estructura de datos
 
-// const caracteres = "Hola    soy  Alvenis José";
+// *************************************************************************************
 
-// function cleanSpaces(frase) {
-//   let result = [];
-//   let lyrics = ""; // Hola
-//   for (let char of frase) {
-//     if (char !== " ") {
-//       lyrics += char;
-//     } else if (lyrics.length > 0) {
-//       result.push(lyrics);
-//       lyrics = "";
-//     }
+// Implementa una función en JavaScript que consuma datos de una API externa de forma concurrente por lotes, controlando el número máximo de solicitudes simultáneas.
+
+// El sistema debe:
+
+// Obtener información de múltiples recursos (Pokémon) desde una API.
+// Procesar las solicitudes en batches con concurrencia limitada.
+// Manejar errores sin detener la ejecución global (Promise.allSettled).
+// Transformar y mostrar los datos relevantes de cada respuesta.
+// Generar un resumen final con el total de éxitos y fallos.
+
+// Dada url: https://pokeapi.co/api/v2/pokemon/id
+
+// async function getPokemonApi(id) {
+//   const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+//   if (!response.ok) {
+//     throw new Error(
+//       `HTTP ${response.status} ${response.statusText} id - ${id}`,
+//     );
 //   }
-//   if (lyrics.length > 0) {
-//     result.push(lyrics);
-//     lyrics = "";
-//   }
-
-//   return result;
+//   return response.json();
 // }
 
-// const print = cleanSpaces(caracteres);
-// console.log(print);
-
-// ********************************************
-
-// Dada url: https://pokeapi.co/api/v2/pokemon/
-// 1.- Crear una llamada a la Api, utilizando fetch(); con el objetivo de utilizar esos datos con cualquier librería o framework de Js. La función debe ser a prueba de errores, es decir, si es correcta debería de regresar los resultados, de lo contrario, debería de regresar un error.
-
-// OBTENEMOS LOS DATOS DE LA API
-
-// const getPokemon = async (n) => {
-//   try {
-//     const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${n}`);
-//     const data = await response.json();
-//     return data;
-//   } catch (err) {
-//     console.log("Upss Error getPokemon: ", err);
+// async function getPokemonBatch(limit, concurrency = 10) {
+//   const promises = [];
+//   for (let i = 1; i <= limit; i += concurrency) {
+//     const batch = Array.from(
+//       { length: Math.min(concurrency, limit - i + 1) },
+//       (_, j) => getPokemonApi(i + j),
+//     );
+//     promises.push(...(await Promise.allSettled(batch)));
 //   }
-// };
+//   return promises;
+// }
 
-// const showPokemon = async () => {
-//   try {
-//     let n = 4;
-//     for (let i = 1; i <= n; i++) {
-//       console.log("---------------------");
-//       const pokemon = await getPokemon(i);
-//       console.log("ID: ", pokemon.id);
-//       console.log("Nombre: ", pokemon.name);
-//       console.log("Altura: ", pokemon.height);
-//       console.log("Peso: ", pokemon.weight);
-//       console.log("Tipo de Pokemon: ");
-//       pokemon.types.forEach((tipo) => {
-//         console.log("--->", tipo.type.name);
-//       });
-//       console.log("Habilidades: ");
-//       pokemon.abilities.forEach((habilidad) => {
-//         console.log("--->", habilidad.ability.name);
-//       });
-//       console.log("\n");
-//     }
-//   } catch (err) {
-//     console.error("Upss Error: ", err);
+// function formatPokemo(pokemons) {
+//   if (pokemons.status === "rejected") {
+//     return { Error: true, reason: pokemons?.reason ?? String(pokemons.reason) };
 //   }
-// };
 
-// showPokemon();
+//   const { id, name, height, weight, types, abilities } = pokemons.value;
 
-// ********************************************
+//   return {
+//     id,
+//     name,
+//     height,
+//     weight,
+//     types: types.map((t) => t.type.name),
+//     abililities: abilities.map((a) => a.ability.name),
+//   };
+// }
+
+// async function showsPokemon(limit) {
+
+//   const raw = await getPokemonBatch(limit);
+//   const pokemon = raw.map(formatPokemo);
+
+//   const succeeded = raw.filter((p) => p.status === "fulfilled");
+//   const failed = raw.filter((p) => p.status === "rejected");
+
+//   for (const p of pokemon) {
+//     console.log(`\n   ${p.name} | (#${p.id})`);
+//     console.log(`   Height: ${p.height} - Weight: ${p.weight}`);
+//     console.log(`   Types: ${p.types.join(", ")}`);
+//     console.log(`   Abilities: ${p.abililities.join(", ")}`);
+//   }
+
+//   console.log(`\nPokemons:  ${succeeded.length} Ok | ${failed.length} Errores`)
+
+
+// }
+
+// showsPokemon(10);
+
+
+// ********************************************************************
 
 // Dada url: 'https://jsonplaceholder.typicode.com/todos/1'
 // Crear una llamada a la Api usando memoization para optimizar el rendimiento de las peticiones, utilizando fetch(); con el objetivo de utilizar esos datos con cualquier librería o framework de Js. La función debe ser a prueba de errores, es decir, si es correcta debería de regresar los resultados, de lo contrario, debería de regresar un error.
@@ -873,7 +1043,7 @@
 
 // showDatosApi();
 
-// ********************************************
+// ********************************************************************
 
 // Dado un array de enteros positivos, todos los elementos se repiten dos veces, excepto uno. Encuentra ese único elemento que no se repite.
 // Ejemplo de uso: isArray = [ 2, 3, 4, 2, 3 ];
@@ -904,10 +1074,9 @@
 //   console.error("Error: ", err.message);
 // }
 
-// ********************************************
+// ********************************************************************
 
 // Este algoritmo encuentra todos los subconjuntos de un conjunto dado.
-// Ejemplo de uso
 
 // const values = [1, 2, 3, 4];
 // function findSubconjuntos(arrValues) {
@@ -926,72 +1095,3 @@
 // const print = findSubconjuntos(values);
 // console.log(print);
 
-// Diseñar e implementar un gestor de descargas que simule la descarga concurrente de múltiples archivos, permitiendo registrar tareas asíncronas, ejecutar las descargas en bloque y gestionar el estado individual de cada archivo. La solución debe manejar correctamente escenarios de éxito y fallo sin interrumpir la ejecución global, garantizando encapsulación del estado, control del ciclo de vida de las tareas y una ejecución segura mediante promesas.
-
-function createFileDownload() {
-  let downloads = [];
-
-  class FileDownload {
-    constructor() {
-      this.statusMap = Object.create(null);
-    }
-
-    simulatedFileDownload(fileName) {
-      this.statusMap[fileName] = "File-In-Progress";
-      return new Promise((resolve, reject) => {
-        const time = Math.floor(Math.random() * 3000) + 1000;
-        setTimeout(() => {
-          const success = Math.random() > 0.2;
-          if (success) {
-            this.statusMap[fileName] = "File-Downloaded-Successfully";
-            resolve(`Archivo: ${fileName} descargado exitosamente`);
-          } else {
-            this.statusMap[fileName] = "File-Failed-Download";
-            reject(`Archivo: ${fileName} falló la descarga`);
-          }
-        }, time);
-      });
-    }
-
-    addFileDownload(fileName) {
-      const task = this.simulatedFileDownload(fileName);
-      downloads.push(task);
-    }
-
-    async executedFileDownload() {
-      try {
-        const tasks = [...downloads];
-        downloads = [];
-        let task = await Promise.allSettled(tasks);
-        console.table(this.statusMap);
-        task.forEach((tarea) => {
-          if (tarea.status === "fulfilled") {
-            console.log("✔ ", tarea.value);
-          } else {
-            console.log("✖ ", tarea.reason);
-          }
-        });
-      } catch (err) {
-        console.error(err.message);
-      }
-    }
-  }
-
-  return new FileDownload();
-}
-
-const manager = createFileDownload();
-
-// Archivos simulados
-[
-  "file1.zip",
-  "file2.zip",
-  "file3.pdf",
-  "video1.mp4",
-  "video2.mp4",
-  "video3.mp4",
-  "photo.png",
-  "update.pkg",
-].forEach((file) => manager.addFileDownload(file));
-
-manager.executedFileDownload();
