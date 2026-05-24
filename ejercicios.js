@@ -165,6 +165,8 @@
 
 // manager.runFile(files);
 
+// *********************************************************************************************************
+
 // Dado un entero positivo n (1 ≤ n ≤ 3999), implemente una función que convierta el número a su representación equivalente en números romanos.
 // La solución debe cumplir los siguientes requisitos:
 
@@ -231,7 +233,7 @@
 //   console.error(err.message);
 // }
 
-// *********************************************
+// *********************************************************************************************************
 
 // Diseña e implementa una función eficiente que convierta un número entero en su representación en números romanos.
 // La función debe recibir:
@@ -303,7 +305,7 @@
 
 //
 
-//***********************************************
+// *********************************************************************************************************
 
 // Diseña e implementa una función eficiente que convierta un número romano en su representación en números enteros positivos.
 // const tablaRomanos = {
@@ -340,25 +342,100 @@
 // const print = romanoToInteger(tablaRomanos, "MMMDCCCLXXXVIII");
 // console.log(print); // 3888
 
-//***********************************************
+//***************************************************************************************************
+// Dado un entero positivo n (1 ≤ n ≤ 3999), implemente una función que convierta el número a su representación equivalente en números romanos.
+// La solución debe cumplir los siguientes requisitos:
+
+// 1.- Debe ser eficiente en tiempo y memoria, evitando operaciones innecesarias.
+// 2.- Debe ser escalable: la lógica debe ser flexible para ajustar o extender nuevos valores romanos si la tabla cambia en el futuro.
+// 3.- El código debe ser robusto, validando tipos de entradas.
+
+// Debe estar escrito con buenas prácticas de ingeniería, evitando mutaciones innecesarias, minimizando complejidad y asegurando legibilidad.
+
+// const MIN_VALUE = 1;
+// const MAX_VALUE = 3999;
+
+// function assertInvalidInput(target) {
+//   if (!Number.isInteger(target)) {
+//     throw new Error(
+//       `El parámetro de la función debe ser un entero positivo mayor a cero, se recibió ${JSON.stringify(target)}`,
+//     );
+//   }
+//   if (target <= 0 || target > 3999) {
+//     throw new Error(
+//       `El parámetro de la función debe ser un número entre ${MIN_VALUE} - ${MAX_VALUE}`,
+//     );
+//   }
+// }
+
+// const ROMAN_TABLE = Object.freeze([
+//   { value: 1000, symbol: "M" },
+//   { value: 900, symbol: "CM" },
+//   { value: 500, symbol: "D" },
+//   { value: 400, symbol: "CD" },
+//   { value: 100, symbol: "C" },
+//   { value: 90, symbol: "XC" },
+//   { value: 50, symbol: "L" },
+//   { value: 40, symbol: "XL" },
+//   { value: 10, symbol: "X" },
+//   { value: 9, symbol: "IX" },
+//   { value: 5, symbol: "V" },
+//   { value: 4, symbol: "IV" },
+//   { value: 1, symbol: "I" },
+// ]);
+// function toRomanNumeral(target) {
+//   try {
+//     assertInvalidInput(target);
+
+//     let remaining = target;
+//     let results = "";
+
+//     for (const { value, symbol } of ROMAN_TABLE) {
+//       const count = Math.floor(remaining / value);
+//       if (count > 0) {
+//         results += symbol.repeat(count);
+//         remaining -= value * count;
+//       }
+//       if (remaining === 0) break;
+//     }
+
+//     return results;
+//   } catch (err) {
+//     console.error(`Error fatal: ${err.message}`);
+//   }
+// }
+
+// const print = toRomanNumeral(120);
+// console.log(print);
+
+//***************************************************************************************************
 // Desarrollar una función llamada showNumberPrime que reciba como parámetro un número entero positivo (target) y determine si dicho número es primo o no.
 // La función debe contar cuántos divisores exactos tiene el número y, si únicamente es divisible entre 1 y él mismo (es decir, tiene exactamente dos divisores), deberá retornar un mensaje indicando que el número es primo. En caso contrario, deberá retornar un mensaje indicando que el número no es primo.
 // Finalmente, se debe mostrar el resultado en consola utilizando
 
-// function showNumberPrime(target) {
-//   let contador = 0;
-//   const divisible = (numero, iteration) => !(numero % iteration);
-//   for (let i = 1; i <= target; i++) {
-//     if (divisible(target, i)) contador++;
+// function showNumberPrime(n) {
+//   try {
+//     if (!Number.isInteger(n) || n <= 0) {
+//       throw new Error(
+//         `El parámetro de la función debe ser un entero positivo mayor a cero`,
+//       );
+//     }
+//     let count = 0;
+//     for (let i = 1; i <= n; i++) {
+//       if (n % i === 0) count++;
+//     }
+//     return count === 2
+//       ? `El número "${n}" es primo`
+//       : `El número "${n}" no es primo`;
+//   } catch (err) {
+//     console.error("Error fatal: ", err.message);
 //   }
-//   return contador === 2
-//     ? `El número: "${target}" es primo`
-//     : `El número: "${target}" no es primo`;
 // }
-// const print = showNumberPrime(37);
+
+// const print = showNumberPrime(1);
 // console.log(print);
 
-// **********************************************
+//***************************************************************************************************
 
 // Implementar en JavaScript una solución que, dado un número entero positivo target, evalúe todos los números comprendidos entre 2 y target para determinar si son números primos.
 // La solución debe incluir una función de validación optimizada que verifique si es primo cada número y un procedimiento principal que recorra el rango, almacene los resultados en un arreglo y los muestre en consola
@@ -386,7 +463,7 @@
 // const print = printNumberPrime(100);
 //       print.forEach((value) => console.log(value))
 
-// **********************************************
+//***************************************************************************************************
 
 // Suma de dos números: Dado un arreglo de números enteros, se debe retornar los indices de los dos números de los cuales al sumarlos nos de como resultado el número buscado "target". (SOLUCIÓN COMPLEJA)
 // ejemplo: Input: nums = [3,2,4,3]  |  target= 6
@@ -421,7 +498,7 @@
 // const print = findPosNumbers(arrayNumeros, 33);
 // console.log(print);
 
-// *******************************************
+//***************************************************************************************************
 
 // Suma de dos números: Dado un arreglo de números enteros, se debe retornar el indice de los dos números de los cuales al sumarlos nos de como resultado el número buscado "target". (SOLUCIÓN SIMPLE)
 // ejemplo: Input: nums = [3,2,4,3]  |  target= 6
@@ -446,7 +523,7 @@
 // const print = findPosNumbers(arrayNumeros, 33);
 // console.log(print);
 
-// ************************************************************
+//***************************************************************************************************
 
 // Dada una palabra, buscarla en una frase y devolver cuántas veces aparece. La frase y la palabra DEBEN ser parametros de una función. (SOLUCIÓN SIMPLE Y LARGA)
 
@@ -477,7 +554,7 @@
 // console.log(formatResults(results))
 
 
-// *******************************************
+//***************************************************************************************************
 
 // A través de una función que recibe 2 parámetros, realizar una multiplicación sin usar el signo de multiplicar. (SOLUCIÓN SIMPLE)
 
@@ -497,7 +574,7 @@
 // const print = multiply(4, -2);
 // console.log(print);
 
-// ****************************************
+//***************************************************************************************************
 
 // A través de una función que recibe 2 parámetros, realizar una multiplicación sin usar el signo de multiplicar. (SOLUCIÓN OPTIMIZADA)
 
@@ -517,7 +594,7 @@
 // const print = multiply(-4, 2);
 // console.log(print);
 
-// **********************************************
+//***************************************************************************************************
 
 // A través de una función que recibe 2 parámetros, realizar una multiplicación sin usar el signo de multiplicar. (SOLUCIÓN OPTIMIZADA DIFERENTE)
 
@@ -536,7 +613,7 @@
 // const print = multiply(-2, -4);
 // console.log(print);
 
-// **********************************************
+//***************************************************************************************************
 
 // Iterando un array de números SÓLO UNA VEZ, se debe limpiar del array aquellos valores de UNDEFINED, FALSE, NULL, CERO e imprimir ÚNICAMENTE los números.
 
@@ -554,7 +631,7 @@
 // const print = cleanArray(values);
 // console.log(print);
 
-// ******************************************
+//***************************************************************************************************
 
 // Dado un array con valores de cualquier tipo, eliminar todos los valores falsy (false, 0, "", null, undefined, NaN) en una sola iteración y retornar los valores truthy.”
 
@@ -567,7 +644,7 @@
 // const print = cleanArray(values);
 // console.log(print);
 
-// **********************************************
+//***************************************************************************************************
 
 // Dado un array de números; hacer una función que imprima el valor más grande; pero, iterando el arreglo sólo una vez.
 
@@ -587,7 +664,7 @@
 //   console.error(err.message);
 // }
 
-// **********************************************
+//***************************************************************************************************
 
 // Dado un array de elementos (ciudades); hacer una función que se encargue de imprimir las 5 ciudades que más se repiten.
 
@@ -641,7 +718,7 @@
 //   console.error(err.message);
 // }
 
-// **********************************************
+//***************************************************************************************************
 
 // Dado un array de elementos (ciudades); hacer una función que se encargue de imprimir las 5 ciudades que más se repiten. (OTRA SOLUCIÓN)
 
@@ -693,7 +770,7 @@
 //   console.error(err.message);
 // }
 
-// **********************************************
+//***************************************************************************************************
 
 // Hacer una función que reciba un STRING y pueda identificar si la frase es un palindromo.
 
